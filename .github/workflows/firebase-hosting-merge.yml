@@ -1,4 +1,4 @@
-name: Deploy static site on push
+name: Deploy CRA on push
 
 on:
   push:
@@ -6,27 +6,38 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
+
+    # アプリがリポジトリ直下にある前提。サブフォルダなら "./app" に変えてね
+    defaults:
+      run:
+        working-directory: .
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: actions/setup-node@v4
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MARIOKART_846FF }}
-          channelId: live
-          projectId: mariokart-846ff
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm install
 
       - name: Build
         run: npm run build
         env:
-          CI: false          # CIで警告をエラーにしない
+          CI: false
+          # ← CRAはビルド時に環境変数を埋め込む。Secretsに入れてあれば有効化される
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
+
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MARIOKART_846FF }}
           channelId: live
