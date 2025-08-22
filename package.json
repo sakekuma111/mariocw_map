@@ -50,10 +50,4 @@
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss-preset-env": "^9.6.0"
-  },
-  "homepage": "https://sakekuma111.github.io/mariocw_map/",
-  "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-  }
-}
+  }}
