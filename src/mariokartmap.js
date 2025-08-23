@@ -179,6 +179,11 @@ useEffect(() => {
   localStorage.setItem(LS.profileListKey, JSON.stringify(profiles));
 }, [profiles]);
 
+useEffect(() => {
+  if (!start || !end) return;
+  const k = `${start}-${end}`;
+  setMemoText(memoDB[k] || "");
+}, [start, end, memoDB]);
   // ウィンドウサイズ監視
   useEffect(() => {
     const onResize = () => {
@@ -191,6 +196,7 @@ useEffect(() => {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+  
 // 初回マウント時に localStorage から復元
 useEffect(() => {
   try {
@@ -291,7 +297,7 @@ useEffect(() => {
     setStart(id); setEnd(null); setMemoText(memoDB[`${id}-${id}`] || "");
   };
   const swap = () => { if (!start && !end) return; const s=end, e=start; setStart(s); setEnd(e); if (s!=null && e!=null) setMemoText(memoDB[`${s}-${e}`] || ""); };
-  const clearSel = () => { setStart(null); setEnd(null); setMemoText(""); };
+  const clearSel = () => { setStart(null); setEnd(null);  };
 
 // 【メモ】既存の saveMemo をこの関数に置き換え
 const saveMemo = async () => {
@@ -301,7 +307,7 @@ const saveMemo = async () => {
   // 次のメモ状態を作る（setStateは非同期なので“次状態”を変数で保持）
   const nextMemoDB = { ...memoDB, [key]: memoText };
   setMemoDB(nextMemoDB);
-  setMemoText("");
+  //setMemoText("");
 
   // localStorage は memoDB と rankDB を“両方”まとめて保存
   try {
@@ -531,6 +537,7 @@ const clearAllRanks = () => {
               />
               <div style={{ display: "flex", gap: 10, marginTop: 10, alignItems: "center" }}>
                 <button
+                type="button"
                   onClick={saveMemo}
                   style={{ padding: "8px 14px", borderRadius: 10, border: "1px solid #10b981", background: "#10b981", color: "white", fontWeight: 700 }}
                 >保存</button>
