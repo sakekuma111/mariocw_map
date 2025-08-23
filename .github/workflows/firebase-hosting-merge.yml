@@ -3,7 +3,7 @@ name: Deploy CRA on push
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: {}
+  workflow_dispatch: {}   # 手動実行も可能
 
 jobs:
   build_and_deploy:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
-        with:                      # ← これが必須！
+        with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MARIOKART_846FF }}
           channelId: live
